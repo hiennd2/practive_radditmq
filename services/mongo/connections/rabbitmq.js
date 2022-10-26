@@ -1,8 +1,7 @@
 require('dotenv').config()
 const amqp = require('amqplib')
-
-const amqpUrl = process.env.URL_RABBITMQ || 'amqp://localhost:5673'
+const uri = require('../configs/index')
 
 module.exports = function getRabbit() {
-    return amqp.connect(amqpUrl)
+    return amqp.connect(uri.rabbitUri)
 }

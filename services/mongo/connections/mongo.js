@@ -1,11 +1,13 @@
 const { MongoClient } = require('mongodb');
-var url = 'mongodb://root:123456@localhost:27017';
+const uri = require('../configs/index')
 
-const client = new MongoClient(url);
+const client = new MongoClient(uri.mongodbUri);
 
 module.exports = async function getClient() {
     await client.connect()
+
     console.log('Connected successfully to server');
+    
     return client
 } 
 

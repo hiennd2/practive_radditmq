@@ -1,13 +1,9 @@
-require('dotenv').config()
-const amqp = require('amqplib')
-const amqpUrl = process.env.RABBIT_URI || 'amqp://localhost:5673'
-
 const express = require('express')
 const app = express()
 const port = 8081
 
 const getClient = require('./connections/mongo')
-const { MongoClient } = require('mongodb');
+const getRabbit = require('./connections/rabbitmq')
 
 try {
     run()
@@ -18,6 +14,8 @@ async function run() {
     const client = await getClient()
     const db =  client.db('posts')
 
+    const rabbit = await getRabbit()
+
     try {
         consumeData()
     } catch (error) {
@@ -25,8 +23,7 @@ async function run() {
     }
 
     async function consumeData() {
-        let connection = await amqp.connect(amqpUrl)
-        let channel = await connection.createChannel()
+        let channel = await rabbit.createChannel()
 
         try {
             let queue = 'queue_post'
@@ -47,7 +44,7 @@ async function run() {
                 }
                 channel.ack(msg) 
             }, {
-                noAck: false // thu cong, can co ack(msg)
+                noAck: false // thu cong, can co channel.ack(msg)
             })
 
             console.log("Mongo: Consume Success!!!")

@@ -19,7 +19,7 @@ async function sendData(exchange, queue, msg, routingKey = '') {
         await channel.assertQueue(queue, {
             durable: true
         })        
-
+        channel.prefetch(1)
         await channel.bindQueue(queue, exchange, routingKey)
         await channel.publish(exchange, routingKey, Buffer.from(msg))
 
@@ -33,7 +33,7 @@ async function sendData(exchange, queue, msg, routingKey = '') {
 }
 
 
-async function receiveData(exchange, queue, msg, routingKey = '') {
+async function (exchange, queue, msg, routingKey = '') {
     const connection = await amqp.connect(amqpUrl)
     const channel = await connection.createChannel()
 
@@ -58,7 +58,6 @@ app.use('/', async (req, res) => {
         console.log("error")
     }
 })
-
 
 
 app.listen(port, function() {
